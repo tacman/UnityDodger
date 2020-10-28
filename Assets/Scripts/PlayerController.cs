@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour {
 
@@ -17,25 +18,51 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
 		alive = true;
 	}
+
+	private Vector3 moveVec;
+	float movementSpeedX = 0;
+	private float movementSpeedY = 0;
+	public void OnMove(InputValue input)
+	{
+		Debug.Log("OnMove");
+		Vector2 inputVec = input.Get<Vector2>();
+		moveVec = new Vector3(inputVec.x, 0, inputVec.y);
+		Debug.Log(moveVec.x);
+
+
+		float horizontalMovement = inputVec.x;
+		float verticalMovement = inputVec.y;
+
+		movementSpeedX = Time.deltaTime * horizontalMovement * speed;		//Horizontal Speed
+		movementSpeedY = Time.deltaTime * verticalMovement * speed;			//Vertical Speed
+
+		
+	}
+
 	
+	public void OnJump()
+	{
+		Debug.Log("Jump!");
+	}
+
 	// Update is called once per frame
 	void Update () {
-		float movementSpeedX = Time.deltaTime * Input.GetAxis("Horizontal") * speed;		//Horizontal Speed
-		float movementSpeedY = Time.deltaTime * Input.GetAxis("Vertical") * speed;			//Vertical Speed
-
-		transform.Translate(movementSpeedX, movementSpeedY, 0);							//Player Movement
+		Transform t = transform;
+		t.Translate(movementSpeedX, movementSpeedY, 0);							//Player Movement
 
 		//creates bounds around player
-		if(transform.position.x > rightBound){
-			transform.position = new Vector3(rightBound,transform.position.y,0);
+		if(t.position.x > rightBound){
+			t.position = new Vector3(rightBound,t.position.y,0);
 		} else if(transform.position.x < leftBound){
-			transform.position = new Vector3(leftBound,transform.position.y,0);
+			t.position = new Vector3(leftBound,t.position.y,0);
 		}
 
 		if(transform.position.y > upBound){
-			transform.position = new Vector3(transform.position.x,upBound,0);
+			t.position = new Vector3(t.position.x,upBound,0);
 		} else if(transform.position.y < downBound){
-			transform.position = new Vector3(transform.position.x,downBound,0);
+			t.position = new Vector3(t.position.x,downBound,0);
 		}
+		
+
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour {
 
@@ -18,39 +19,40 @@ public class UIManager : MonoBehaviour {
 		hideFinished();
 
 		//Checks to make sure MainLevel is the loaded level
-		if(Application.loadedLevelName == "MainLevel")
+		if(SceneManager.GetActiveScene().name == "MainLevel")
 			playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
 	}
-	
-	// Update is called once per frame
-	void Update () {
 
-
-
-		//uses the p button to pause and unpause the game
-		if(Input.GetKeyDown(KeyCode.P))
+	void OnPause()
+	{
+		if( (int)Time.timeScale == 1 && playerController.alive == true)
 		{
-			if(Time.timeScale == 1 && playerController.alive == true)
-			{
-				Time.timeScale = 0;
-				showPaused();
-			} else if (Time.timeScale == 0 && playerController.alive == true){
-				Time.timeScale = 1;
-				hidePaused();
-			}
+			Time.timeScale = 0f;
+			showPaused();
+		} else if (Time.timeScale == 0 && playerController.alive == true){
+			Time.timeScale = 1f;
+			hidePaused();
 		}
-
+		
 		//shows finish gameobjects if player is dead and timescale = 0
 		if (Time.timeScale == 0 && playerController.alive == false){
 			showFinished();
 		}
+		
+	}
+	// Update is called once per frame
+	void Update () {
+
+
 	}
 
 
 	//Reloads the Level
-	public void Reload(){
-		Application.LoadLevel(Application.loadedLevel);
-	}
+	public void Reload()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		// Application.LoadLevel(Application.loadedLevel);
+		}
 
 	//controls the pausing of the scene
 	public void pauseControl(){
@@ -94,7 +96,19 @@ public class UIManager : MonoBehaviour {
 
 	//loads inputted level
 	public void LoadLevel(string level){
-		Application.LoadLevel(level);
+		SceneManager.LoadScene(level);
+	}
+
+	public void Quit()
+	{
+     // save any game data here
+     #if UNITY_EDITOR
+         // Application.Quit() does not work in the editor so
+         // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+         UnityEditor.EditorApplication.isPlaying = false;
+     #else
+         Application.Quit();
+     #endif
 	}
 	
 }
